@@ -142,6 +142,10 @@ def load_data(file):
 
 # Function to perform EDA
 def perform_eda(df):
+    st.set_option('deprecation.showfileUploaderEncoding', False)
+    st.set_option('deprecation.showPyplotGlobalUse', False)
+    
+    
     st.write('**Data Preview:**')
     st.write(df.sample(10))
 
