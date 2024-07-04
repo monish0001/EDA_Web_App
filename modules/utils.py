@@ -67,9 +67,40 @@ def plot_count(df, column):
 
     # Display plot in Streamlit
     st.pyplot()
+def check_columns_distribution(df,selected_col):
+    st.subheader(f'Column: {selected_col}')
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6))
 
-    # Display frequency analysis
-    st.write('**Frequency Analysis:**')
-    freq_table = df[column].value_counts().reset_index()
-    freq_table.columns = [column, 'Frequency']
-    st.write(freq_table)
+    sns.boxplot(x=df[selected_col], ax=ax1)
+    ax1.set_title('Box Plot')
+
+    sns.kdeplot(df[selected_col], shade=True, ax=ax2)
+    ax2.set_title('KDE Plot')
+
+    st.pyplot(fig)
+
+def categorical_column_analysis(df,selected_cat_col):
+        st.subheader(f'Column: {selected_cat_col}')
+
+        fig=plt.figure(figsize=(10, 6))
+        sns.countplot(x=selected_cat_col, data=df)
+        plt.title(f'Count Plot of {selected_cat_col}')
+        plt.tight_layout()
+        plt.xticks(rotation=90,fontsize='small')
+        st.pyplot(fig)
+
+        st.write('**Frequency Analysis:**')
+        freq_table = df[selected_cat_col].value_counts().reset_index()
+        freq_table.columns = [selected_cat_col, 'Frequency']
+        st.write(freq_table)
+        
+def correlation_analysis(df,col1,col2):
+    st.subheader(f'Correlation between {col1} and {col2}')
+    correlation = df[col1].corr(df[col2])
+    st.write(f'Correlation coefficient: {correlation}')
+
+    fig=plt.figure(figsize=(10, 6))
+    sns.scatterplot(x=df[col1], y=df[col2])
+    plt.title(f'Scatter Plot of {col1} vs {col2}')
+    st.pyplot(fig)
+    
