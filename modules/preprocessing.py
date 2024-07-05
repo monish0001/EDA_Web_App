@@ -1,4 +1,6 @@
 import streamlit as st
+import pandas as pd
+from sklearn.preprocessing import StandardScaler, MinMaxScaler, OneHotEncoder, LabelEncoder
 
 def show_preprocessing():
     st.write('**Preprocessing Section**')
@@ -16,6 +18,10 @@ def show_preprocessing():
     drop_duplicates(df)
     st.markdown('<hr>', unsafe_allow_html=True)
     remove_columns(df)
+    st.markdown('<hr>', unsafe_allow_html=True)
+    scale_numerical_data(df)
+    st.markdown('<hr>', unsafe_allow_html=True)
+    encode_categorical_data(df)
     st.markdown('<hr>', unsafe_allow_html=True)
     preview_preprocessed_data(df)
     st.markdown('<hr>', unsafe_allow_html=True)
@@ -95,6 +101,73 @@ def remove_columns(df):
         st.write(f'Removed columns: {columns_to_remove}')
 
     st.session_state.df = df
+    
+    
+def scale_numerical_data(df):
+    st.write('**Scale Numerical Data**')
+    
+    numeric_cols = df.select_dtypes(include=['number']).columns
+    
+    if not numeric_cols.any():
+        st.write('No numerical columns found.')
+        return
+    
+    selected_cols = st.multiselect('Select numerical columns to scale:', numeric_cols)
+    
+    if not selected_cols:
+        st.write('Please select at least one numerical column to scale.')
+        return
+    
+    scale_method = st.selectbox('Select scaling method:', ['Standard Scaler', 'Min-Max Scaler'])
+    
+    if st.button('Apply Scaling'):
+        scaler = None
+        if scale_method == 'Standard Scaler':
+            scaler = StandardScaler()
+        elif scale_method == 'Min-Max Scaler':
+            scaler = MinMaxScaler()
+        
+        if scaler:
+            df[selected_cols] = scaler.fit_transform(df[selected_cols])
+            st.write('Numerical data scaled successfully.')
+
+    st.session_state.df = df
+
+def encode_categorical_data(df):
+    st.write('**Encode Categorical Data**')
+    
+    categorical_cols = df.select_dtypes(include=['object', 'category']).columns
+    
+    if not categorical_cols.any():
+        st.write('No categorical columns found.')
+        return
+    
+    selected_cols = st.multiselect('Select categorical columns to encode:', categorical_cols)
+    
+    if not selected_cols:
+        st.write('Please select at least one categorical column to encode.')
+        return
+    
+    encode_method = st.selectbox('Select encoding method:', ['Label Encoding', 'One-Hot Encoding'])
+    
+    if st.button('Apply Encoding'):
+        if encode_method == 'Label Encoding':
+            label_encoder = LabelEncoder()
+            for col in selected_cols:
+                df[col] = label_encoder.fit_transform(df[col].astype(str))
+            st.write('Categorical data encoded using Label Encoding.')
+        
+        elif encode_method == 'One-Hot Encoding':
+            encoder = OneHotEncoder()#drop='first'
+            encoded_data = encoder.fit_transform(df[selected_cols])
+            encoded_df = pd.DataFrame(encoded_data.toarray(), columns=encoder.get_feature_names_out(selected_cols))
+            df.drop(columns=selected_cols, inplace=True)
+            df = pd.concat([df, encoded_df], axis=1)
+            st.write('Categorical data encoded using One-Hot Encoding.')
+
+    st.session_state.df = df
+    
+        
 
 def preview_preprocessed_data(df):
     st.write('**Preprocessed Data Preview**')
