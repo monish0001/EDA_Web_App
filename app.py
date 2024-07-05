@@ -5,6 +5,17 @@ from modules.preprocessing import show_preprocessing
 import warnings
 warnings.filterwarnings('ignore')  # Ignore all warnings
 
+# Add custom CSS to hide the menu and deploy button
+hide_streamlit_style = """
+            <style>
+            #MainMenu {visibility: hidden;}
+            footer {visibility: hidden;}
+            header {visibility: hidden;}
+            .viewerBadge_link__1S137 {display: none;}
+            </style>
+            """
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+
 def main():
     st.title('Exploratory Data Analysis (EDA) and Preprocessing WebApp')
 
