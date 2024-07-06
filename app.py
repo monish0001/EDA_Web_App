@@ -52,6 +52,8 @@ from modules.data_loader import load_data
 from modules.eda import show_eda
 from modules.preprocessing import show_preprocessing
 import warnings
+from modules.classification import show_classification
+from modules.regression import show_regression  
 
 warnings.filterwarnings('ignore')  # Ignore all warnings
 
@@ -69,13 +71,7 @@ hide_streamlit_style = """
             """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
-def show_classification():
-    st.write("### Classification")
-    st.write("Coming soon...")
 
-def show_regression():
-    st.write("### Regression")
-    st.write("Coming soon...")
 
 def main():
     st.title('EDA & Preprocessing WebApp')
@@ -105,9 +101,9 @@ def main():
         elif main_option == 'ML Algorithms':
             ml_option = st.sidebar.radio('Select an ML Algorithm type:', ['Classification', 'Regression'])
             if ml_option == 'Classification':
-                show_classification()
+                show_classification(st.session_state.df)
             elif ml_option == 'Regression':
-                show_regression()
+                show_regression(st.session_state.df)
     else:
         st.info('Awaiting file upload.')
 
